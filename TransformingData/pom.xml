@@ -50,11 +50,16 @@
             <artifactId>spring-boot-starter-cache</artifactId>
         </dependency>
 
-        <!-- PostgreSQL Driver -->
+        <!-- Explicit JDBC starter to ensure driver detection -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-jdbc</artifactId>
+        </dependency>
+
+        <!-- PostgreSQL Driver (compile scope to be available at runtime) -->
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <scope>runtime</scope>
         </dependency>
 
         <!-- Commons IO (still used) -->

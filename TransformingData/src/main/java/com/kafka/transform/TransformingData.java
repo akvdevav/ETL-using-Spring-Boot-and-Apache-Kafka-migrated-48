@@ -8,9 +8,10 @@ import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 
-@SpringBootApplication
+@SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
 @EnableRabbit
 public class TransformingData {
 
@@ -35,6 +36,9 @@ public class TransformingData {
                 break;
             case "/":
                 res = Integer.parseInt(fileData[0]) / Integer.parseInt(fileData[1]);
+                break;
+            default:
+                // handle unknown operator if needed
                 break;
         }
         String result = value + "," + res;

@@ -1,15 +1,8 @@
 package com.example.demo.configuration;
 
-import org.springframework.amqp.rabbit.connection.ConnectionFactory;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class KafkaConsumerConfig {
-
-    @Bean
-    public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
-        return new RabbitTemplate(connectionFactory);
-    }
+    // RabbitTemplate bean is defined in RabbitProducerConfig; this class remains for legacy naming compatibility.
 }
