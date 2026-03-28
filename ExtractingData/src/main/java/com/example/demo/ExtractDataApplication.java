@@ -1,6 +1,5 @@
 package com.example.demo;
 
-import org.springframework.amqp.core.Queue;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -30,11 +29,5 @@ public class ExtractDataApplication {
 		dataSource.setUsername("postgres");
 		dataSource.setPassword("postgres");
 		return dataSource;
-	}
-
-	// Declare the target queue used by the downstream consumer
-	@Bean
-	public Queue targetTopicQueue() {
-		return new Queue("target_topic", true);
 	}
 }
