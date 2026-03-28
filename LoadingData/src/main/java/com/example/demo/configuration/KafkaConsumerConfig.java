@@ -10,8 +10,18 @@ import org.springframework.context.annotation.Configuration;
 public class KafkaConsumerConfig {
 
     /**
-     * Configures a Rabbit listener container factory that uses the same JSON message converter
-     * defined for the RabbitTemplate. This replaces the legacy Kafka consumer configuration.
+     * Provides a JSON message converter for RabbitMQ messaging.
+     * This bean is also defined in {@link RabbitProducerConfig}, but defining it here
+     * guarantees availability for the listener container factory.
+     */
+    @Bean
+    public Jackson2JsonMessageConverter jackson2JsonMessageConverter() {
+        return new Jackson2JsonMessageConverter();
+    }
+
+    /**
+     * Configures a Rabbit listener container factory that uses the JSON message converter.
+     * This replaces the legacy Kafka consumer configuration.
      */
     @Bean
     public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(
