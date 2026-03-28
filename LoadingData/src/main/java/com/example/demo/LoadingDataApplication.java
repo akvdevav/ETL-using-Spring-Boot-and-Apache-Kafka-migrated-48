@@ -8,6 +8,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 import javax.sql.DataSource;
+import java.util.HashMap;
+import java.util.Map;
 
 @SpringBootApplication
 @EnableRabbit
@@ -15,7 +17,11 @@ import javax.sql.DataSource;
 public class LoadingDataApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(LoadingDataApplication.class, args);
+        SpringApplication app = new SpringApplication(LoadingDataApplication.class);
+        Map<String, Object> defaultProps = new HashMap<>();
+        defaultProps.put("server.port", "8083");
+        app.setDefaultProperties(defaultProps);
+        app.run(args);
     }
 
     @Bean

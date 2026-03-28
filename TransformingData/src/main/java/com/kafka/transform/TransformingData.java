@@ -10,6 +10,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
 @EnableRabbit
@@ -46,7 +50,11 @@ public class TransformingData {
     }
 
     public static void main(String[] args) {
-        SpringApplication.run(TransformingData.class, args);
+        SpringApplication app = new SpringApplication(TransformingData.class);
+        Map<String, Object> defaultProps = new HashMap<>();
+        defaultProps.put("server.port", "8084"); // distinct port to avoid conflicts
+        app.setDefaultProperties(defaultProps);
+        app.run(args);
     }
 
     @Bean

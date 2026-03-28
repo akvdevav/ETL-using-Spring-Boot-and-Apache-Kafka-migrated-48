@@ -74,6 +74,10 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <!-- Ensure each module starts on a random free port to avoid conflicts during CI runs -->
+                    <arguments>--server.port=0</arguments>
+                </configuration>
             </plugin>
         </plugins>
     </build>
