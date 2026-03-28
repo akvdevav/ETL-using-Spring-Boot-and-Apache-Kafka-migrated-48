@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Configuration;
 public class RabbitProducerConfig {
 
     @Bean
+    @ConditionalOnMissingBean(Jackson2JsonMessageConverter.class)
     public Jackson2JsonMessageConverter jackson2JsonMessageConverter() {
         return new Jackson2JsonMessageConverter();
     }

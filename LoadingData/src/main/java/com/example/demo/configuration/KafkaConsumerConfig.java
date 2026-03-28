@@ -3,6 +3,7 @@ package com.example.demo.configuration;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -11,10 +12,11 @@ public class KafkaConsumerConfig {
 
     /**
      * Provides a JSON message converter for RabbitMQ messaging.
-     * This bean is also defined in {@link RabbitProducerConfig}, but defining it here
-     * guarantees availability for the listener container factory.
+     * The bean is defined conditionally to avoid duplicate definitions
+     * when {@link RabbitProducerConfig} also defines the converter.
      */
     @Bean
+    @ConditionalOnMissingBean(Jackson2JsonMessageConverter.class)
     public Jackson2JsonMessageConverter jackson2JsonMessageConverter() {
         return new Jackson2JsonMessageConverter();
     }

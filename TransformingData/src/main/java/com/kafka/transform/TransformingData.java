@@ -10,7 +10,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -52,7 +51,7 @@ public class TransformingData {
     public static void main(String[] args) {
         SpringApplication app = new SpringApplication(TransformingData.class);
         Map<String, Object> defaultProps = new HashMap<>();
-        defaultProps.put("server.port", "8084"); // distinct port to avoid conflicts
+        defaultProps.put("server.port", "8084");
         app.setDefaultProperties(defaultProps);
         app.run(args);
     }
@@ -60,5 +59,16 @@ public class TransformingData {
     @Bean
     public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
         return new RabbitTemplate(connectionFactory);
+    }
+
+    // Declare source and target queues so they are auto‑created at startup
+    @Bean
+    public org.springframework.amqp.core.Queue sourceQueue() {
+        return new org.springframework.amqp.core.Queue("source_queue", true);
+    }
+
+    @Bean
+    public org.springframework.amqp.core.Queue targetQueue() {
+        return new org.springframework.amqp.core.Queue("target_queue", true);
     }
 }

@@ -1,5 +1,6 @@
 package com.example.demo;
 
+import org.springframework.amqp.core.Queue;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
@@ -32,5 +33,11 @@ public class LoadingDataApplication {
         dataSource.setUsername("postgres");
         dataSource.setPassword("postgres");
         return dataSource;
+    }
+
+    // Declare the queue that this service listens on; it will be auto‑created at startup
+    @Bean
+    public Queue targetTopicQueue() {
+        return new Queue("target_topic", true);
     }
 }

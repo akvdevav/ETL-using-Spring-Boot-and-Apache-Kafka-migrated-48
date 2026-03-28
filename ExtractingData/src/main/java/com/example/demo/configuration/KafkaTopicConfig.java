@@ -3,6 +3,7 @@ package com.example.demo.configuration;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -17,5 +18,11 @@ public class KafkaTopicConfig {
     @Bean
     public Queue sourceTopicQueue() {
         return new Queue("source_topic", true);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name = "targetTopicQueue")
+    public Queue targetTopicQueue() {
+        return new Queue("target_topic", true);
     }
 }

@@ -85,7 +85,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <!-- Use a random port for each module execution to avoid port collisions -->
-                    <jvmArguments>-Dserver.port=0</jvmArguments>
+                    <jvmArguments>-Dserver.port=0 -Dspring.rabbitmq.listener.simple.missingQueuesFatal=false</jvmArguments>
                 </configuration>
             </plugin>
         </plugins>
