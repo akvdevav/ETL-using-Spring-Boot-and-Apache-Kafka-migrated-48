@@ -1,95 +1,52 @@
 package com.kafka.transform;
 
+import org.springframework.amqp.rabbit.annotation.EnableRabbit;
+import org.springframework.amqp.rabbit.annotation.Queue;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
 
-import java.util.Properties;
+@SpringBootApplication
+@EnableRabbit
+public class TransformingData {
 
-import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.common.serialization.Serdes;
-import org.apache.kafka.streams.KafkaStreams;
-import org.apache.kafka.streams.KeyValue;
-import org.apache.kafka.streams.StreamsBuilder;
-import org.apache.kafka.streams.StreamsConfig;
-import org.apache.kafka.streams.Topology;
-import org.apache.kafka.streams.kstream.KStream;
-import org.apache.kafka.streams.kstream.KeyValueMapper;
-import org.apache.kafka.streams.kstream.Produced;
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
 
+    @RabbitListener(queuesToDeclare = @Queue(name = "source_queue"))
+    public void processMessage(String value) {
+        int res = 0;
+        String[] fileData = value.split(",");
+        String operator = fileData[2];
 
-public class TransformingData 
-{
-	
-	 public Topology createTopology(){
-		 
-		 StreamsBuilder builder = new StreamsBuilder();
-	        
-	        KStream<String, String> textLines = builder.stream("source_topic");
-	        
-	        
-	        //Performing required operation
-	        
-	       KStream<String, String> textWithResult = textLines.map(new KeyValueMapper<String,String, KeyValue<String,String>>(){
+        switch (operator) {
+            case "+":
+                res = Integer.parseInt(fileData[0]) + Integer.parseInt(fileData[1]);
+                break;
+            case "-":
+                res = Integer.parseInt(fileData[0]) - Integer.parseInt(fileData[1]);
+                break;
+            case "*":
+                res = Integer.parseInt(fileData[0]) * Integer.parseInt(fileData[1]);
+                break;
+            case "/":
+                res = Integer.parseInt(fileData[0]) / Integer.parseInt(fileData[1]);
+                break;
+        }
+        String result = value + "," + res;
+        rabbitTemplate.convertAndSend("target_queue", result);
+    }
 
-			@Override
-			public KeyValue<String, String> apply(String key, String value) {
-				
-		
-	            int res=0;
-	        	
-	        	String result = value;
-	        	String[] fileData = result.split(",");
-	        	String  operator = fileData[2];
-	        	
-	        	switch(operator) {
-	        	
-	        	case "+":res = Integer.parseInt(fileData[0]) + Integer.parseInt(fileData[1]);
-	        	               break;
-	        	               
-	        	case "-":res = Integer.parseInt(fileData[0]) - Integer.parseInt(fileData[1]);
-	                           break;
-	                           
-	        	case "*":res = Integer.parseInt(fileData[0]) * Integer.parseInt(fileData[1]);
-	                           break;
-	                           
-	        	case "/":res = Integer.parseInt(fileData[0]) / Integer.parseInt(fileData[1]);
-	                           break;
-	        	
-	        	}
-	        	result = value + "," + res;
-	        	value = new String(result);
-				
-				return new KeyValue<>(key,value);
-				
-			} 
-			});
-	    	
-	 
-	       textWithResult.to("target_topic", Produced.with(Serdes.String(), Serdes.String()));
+    public static void main(String[] args) {
+        SpringApplication.run(TransformingData.class, args);
+    }
 
-	        return builder.build();
-	    }
-	
-    public static void main( String[] args )
-    {
-    	
-    	//Setting the properties
-    	Properties properties = new Properties();
-        properties.put(StreamsConfig.APPLICATION_ID_CONFIG, "data-transformation");
-        properties.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "127.0.0.1:9092");
-        properties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
-        properties.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass());
-        properties.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass());
-        
-       TransformingData gettingBuild = new TransformingData();
-       
-       KafkaStreams streams = new KafkaStreams(gettingBuild.createTopology(), properties);
-       streams.start();
-       
-       
-       //printing the topology
-       System.out.println(streams.toString());
-       
-       // shutdown hook to correctly close the stream application
-       Runtime.getRuntime().addShutdownHook(new Thread(streams::close));
- 
+    @Bean
+    public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
+        return new RabbitTemplate(connectionFactory);
     }
 }
