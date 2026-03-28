@@ -24,8 +24,11 @@ public class KafkaConsumerConfig {
     /**
      * Configures a Rabbit listener container factory that uses the JSON message converter.
      * This replaces the legacy Kafka consumer configuration.
+     * The bean is defined conditionally to avoid overriding Spring Boot's default factory,
+     * which can lead to circular reference issues.
      */
     @Bean
+    @ConditionalOnMissingBean(name = "rabbitListenerContainerFactory")
     public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(
             ConnectionFactory connectionFactory,
             Jackson2JsonMessageConverter messageConverter) {

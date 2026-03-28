@@ -1,11 +1,15 @@
 package com.example.demo;
 
 import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 import javax.sql.DataSource;
@@ -35,9 +39,25 @@ public class LoadingDataApplication {
         return dataSource;
     }
 
-    // Declare the queue that this service listens on; it will be auto‑created at startup
+    // Queue that this service consumes from. It will be auto‑created at startup.
     @Bean
     public Queue targetTopicQueue() {
         return new Queue("target_topic", true);
+    }
+
+    // Primary RabbitTemplate bean to be used throughout the application.
+    // This helps resolve the circular reference issue in the TransformingData module.
+    @Bean
+    @Primary
+    public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory,
+                                         Jackson2JsonMessageConverter messageConverter) {
+        RabbitTemplate template = new RabbitTemplate(connectionFactory);
+        template.setMessageConverter(messageConverter);
+        return template;
+    }
+
+    @Bean
+    public Jackson2JsonMessageConverter jackson2JsonMessageConverter() {
+        return new Jackson2JsonMessageConverter();
     }
 }

@@ -4,12 +4,10 @@ import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.amqp.rabbit.annotation.Queue;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.context.annotation.Bean;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -56,18 +54,13 @@ public class TransformingData {
         app.run(args);
     }
 
-    @Bean
-    public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
-        return new RabbitTemplate(connectionFactory);
-    }
-
     // Declare source and target queues so they are auto‑created at startup
-    @Bean
+    @org.springframework.context.annotation.Bean
     public org.springframework.amqp.core.Queue sourceQueue() {
         return new org.springframework.amqp.core.Queue("source_queue", true);
     }
 
-    @Bean
+    @org.springframework.context.annotation.Bean
     public org.springframework.amqp.core.Queue targetQueue() {
         return new org.springframework.amqp.core.Queue("target_queue", true);
     }

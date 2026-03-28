@@ -72,6 +72,10 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <!-- Allow circular references globally to resolve legacy bean wiring -->
+                    <jvmArguments>-Dspring.main.allow-circular-references=true</jvmArguments>
+                </configuration>
             </plugin>
         </plugins>
     </build>
