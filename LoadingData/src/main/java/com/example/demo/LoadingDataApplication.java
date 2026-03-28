@@ -10,6 +10,7 @@ import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 import javax.sql.DataSource;
@@ -56,7 +57,9 @@ public class LoadingDataApplication {
         return template;
     }
 
+    // Define the JSON message converter only if it hasn't been defined elsewhere.
     @Bean
+    @ConditionalOnMissingBean(Jackson2JsonMessageConverter.class)
     public Jackson2JsonMessageConverter jackson2JsonMessageConverter() {
         return new Jackson2JsonMessageConverter();
     }

@@ -11,17 +11,6 @@ import org.springframework.context.annotation.Configuration;
 public class KafkaConsumerConfig {
 
     /**
-     * Provides a JSON message converter for RabbitMQ messaging.
-     * The bean is defined conditionally to avoid duplicate definitions
-     * when {@link RabbitProducerConfig} also defines the converter.
-     */
-    @Bean
-    @ConditionalOnMissingBean(Jackson2JsonMessageConverter.class)
-    public Jackson2JsonMessageConverter jackson2JsonMessageConverter() {
-        return new Jackson2JsonMessageConverter();
-    }
-
-    /**
      * Configures a Rabbit listener container factory that uses the JSON message converter.
      * This replaces the legacy Kafka consumer configuration.
      * The bean is defined conditionally to avoid overriding Spring Boot's default factory,
